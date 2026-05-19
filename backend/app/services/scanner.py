@@ -28,9 +28,9 @@ def list_scans() -> list[ScanRecord]:
 
 
 SCAN_ARGS: dict[ScanType, str] = {
-    ScanType.quick:   "-sV -T4 --top-ports 100 --open",
-    ScanType.full:    "-sV -T3 -p- --open",
-    ScanType.stealth: "-sT -Pn -T2 --top-ports 200 --open",
+    ScanType.quick:   "-Pn -sT -sV -T4 --top-ports 100",
+    ScanType.full:    "-Pn -sT -sV -T3 -p-",
+    ScanType.stealth: "-Pn -sT -sV -T2 --top-ports 200",
 }
 
 
@@ -105,6 +105,7 @@ async def _nmap_scan(record: ScanRecord, ws_manager) -> list[FindingModel]:
     args = SCAN_ARGS[record.scan_type]
 
     await _emit(ws_manager, sid, "log", f"Nmap: starting {record.scan_type} scan with args: {args}")
+    await _emit(ws_manager, sid, "log", f"Nmap executable: {nm.nmap_path}")
 
     loop = asyncio.get_event_loop()
     try:
@@ -112,6 +113,10 @@ async def _nmap_scan(record: ScanRecord, ws_manager) -> list[FindingModel]:
             None,
             lambda: nm.scan(hosts=record.target, arguments=args),
         )
+        
+        await _emit(ws_manager, sid, "log", f"Nmap command: {nm.command_line()}")
+        await _emit(ws_manager, sid, "log", f"Hosts found: {nm.all_hosts()}")
+    
     except nmap.PortScannerError as exc:
         raise RuntimeError(f"Nmap error: {exc}") from exc
 
