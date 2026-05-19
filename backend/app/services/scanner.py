@@ -28,8 +28,8 @@ def list_scans() -> list[ScanRecord]:
 
 
 SCAN_ARGS: dict[ScanType, str] = {
-    ScanType.quick:   "-Pn -sT --top-ports 20",
-    ScanType.full:    "-Pn -sT -p 1-1000",
+    ScanType.quick:   "-Pn -sT -sV --top-ports 20",
+    ScanType.full:    "-Pn -sT -sV -p 1-1000",
     ScanType.stealth: "-Pn -sT --top-ports 50",
 }
 
@@ -171,18 +171,18 @@ async def _amass_enum(target: str, sid: str, ws_manager) -> list[str]:
     await _emit(ws_manager, sid, "log", f"Amass: passive enumeration for {target}")
     try:
         proc = await asyncio.create_subprocess_exec(
-            "amass", "enum", "-passive", "-d", target, "-timeout", "2",
+            "amass", "enum", "-passive", "-d", target, "-timeout", "1",
             stdout=asyncio.subprocess.PIPE,
             stderr=asyncio.subprocess.DEVNULL,
         )
-        stdout, _ = await asyncio.wait_for(proc.communicate(), timeout=130)
+        stdout, _ = await asyncio.wait_for(proc.communicate(), timeout=20)
         assets = [l.strip() for l in stdout.decode().splitlines() if l.strip()]
         for asset in assets:
             await _emit(ws_manager, sid, "asset", {"name": asset, "type": "subdomain"})
         await _emit(ws_manager, sid, "log", f"Amass: found {len(assets)} assets")
         return assets
     except Exception as exc:
-        await _emit(ws_manager, sid, "log", f"Amass: {exc} (normal on non-domain targets)")
+        await _emit(ws_manager, sid, "log", f"Amass error: {str(exc)}")
         return []
 
 
