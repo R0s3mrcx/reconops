@@ -28,9 +28,9 @@ def list_scans() -> list[ScanRecord]:
 
 
 SCAN_ARGS: dict[ScanType, str] = {
-    ScanType.quick:   "-Pn -sT -sV -T4 --top-ports 100",
-    ScanType.full:    "-Pn -sT -sV -T3 -p-",
-    ScanType.stealth: "-Pn -sT -sV -T2 --top-ports 200",
+    ScanType.quick:   "-Pn -sT --top-ports 20",
+    ScanType.full:    "-Pn -sT -p 1-1000",
+    ScanType.stealth: "-Pn -sT --top-ports 50",
 }
 
 
@@ -111,7 +111,10 @@ async def _nmap_scan(record: ScanRecord, ws_manager) -> list[FindingModel]:
     try:
         await loop.run_in_executor(
             None,
-            lambda: nm.scan(hosts=record.target, arguments=args),
+            lambda: nm.scan(
+                hosts=record.target,
+                arguments=f"{args} --host-timeout 30s"
+            ),
         )
         
         await _emit(ws_manager, sid, "log", f"Nmap command: {nm.command_line()}")
