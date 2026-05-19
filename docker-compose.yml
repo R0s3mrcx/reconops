@@ -1,0 +1,62 @@
+services:
+  backend:
+    build: ./backend
+    container_name: reconops-api
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend/reports:/app/reports
+    environment:
+      - ENVIRONMENT=development
+      - LOG_LEVEL=INFO
+    networks:
+      - reconops
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  frontend:
+    build: ./frontend
+    container_name: reconops-ui
+    ports:
+      - "3000:3000"
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks:
+      - reconops
+
+  prometheus:
+    image: prom/prometheus:v2.52.0
+    container_name: reconops-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    networks:
+      - reconops
+    profiles: ["monitoring"]
+
+  grafana:
+    image: grafana/grafana:10.4.2
+    container_name: reconops-grafana
+    ports:
+      - "3001:3000"
+    environment:
+       GF_SECURITY_ADMIN_PASSWORD: ${GF_SECURITY_ADMIN_PASSWORD}
+       GF_AUTH_ANONYMOUS_ENABLED: true
+    volumes:
+      - ./monitoring/grafana:/etc/grafana/provisioning
+    depends_on:
+      - prometheus
+    networks:
+      - reconops
+    profiles: ["monitoring"]
+
+networks:
+  reconops:
+    driver: bridge
