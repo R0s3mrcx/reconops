@@ -30,7 +30,7 @@ def list_scans() -> list[ScanRecord]:
 SCAN_ARGS: dict[ScanType, str] = {
     ScanType.quick:   "-sV -T4 --top-ports 100 --open",
     ScanType.full:    "-sV -T3 -p- --open",
-    ScanType.stealth: "-sS -T2 --top-ports 200 --open",
+    ScanType.stealth: "-sT -Pn -T2 --top-ports 200 --open",
 }
 
 
