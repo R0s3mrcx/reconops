@@ -77,8 +77,10 @@ const CAT_LABEL: Record<Category, string> = {
   high_risk:   'High Risk',
 }
 
-const API = 'http://localhost:8000'
-const WS  = 'ws://localhost:8000'
+const API = import.meta.env.VITE_API_URL ?? 'http://localhost:8000'
+const WS  = API
+	.replace('https://', 'wss://')
+	.replace('http://', 'ws://')
 
 const riskColor = (score: number) =>
   score >= 80 ? '#fc8181' : score >= 60 ? '#ed8936' : score >= 40 ? '#f6ad55' : '#48bb78'
