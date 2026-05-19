@@ -105,7 +105,6 @@ async def _nmap_scan(record: ScanRecord, ws_manager) -> list[FindingModel]:
     args = SCAN_ARGS[record.scan_type]
 
     await _emit(ws_manager, sid, "log", f"Nmap: starting {record.scan_type} scan with args: {args}")
-    await _emit(ws_manager, sid, "log", f"Nmap executable: {nm.nmap_path}")
 
     loop = asyncio.get_event_loop()
     try:
