@@ -35,6 +35,13 @@ app.mount("/metrics", metrics_app)
 
 app.include_router(scans_router)
 
+@app.get("/")
+async def root():
+    return {
+        "message": "ReconOps Backend Running",
+        "docs": "/docs",
+        "health": "/health"
+    }
 
 @app.get("/health")
 async def health():
