@@ -6,7 +6,7 @@ ReconOps is a containerized platform that continuously discovers exposed network
 
 ---
 
-![CI](https://github.com/YOUR_USERNAME/reconops/actions/workflows/ci.yml/badge.svg)
+![CI](https://github.com/r0s3mrcx/reconops/actions/workflows/ci.yml/badge.svg)
 ![Python](https://img.shields.io/badge/Python-3.11-3776ab?style=flat-square&logo=python&logoColor=white)
 ![FastAPI](https://img.shields.io/badge/FastAPI-0.111-009688?style=flat-square&logo=fastapi&logoColor=white)
 ![React](https://img.shields.io/badge/React-18-61dafb?style=flat-square&logo=react&logoColor=white)
