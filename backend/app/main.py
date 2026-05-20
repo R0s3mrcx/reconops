@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Request
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from prometheus_client import make_asgi_app
 import logging
@@ -26,8 +26,9 @@ app = FastAPI(
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-       "http://localhost:5173",
-       "https://reconops.vercel.app",
+        "http://localhost:3000",         
+        "http://localhost:5173",         
+        "https://reconops.vercel.app",   
     ],
     allow_credentials=True,
     allow_methods=["*"],
@@ -39,13 +40,11 @@ app.mount("/metrics", metrics_app)
 
 app.include_router(scans_router)
 
+
 @app.get("/")
 async def root():
-    return {
-        "message": "ReconOps Backend Running",
-        "docs": "/docs",
-        "health": "/health"
-    }
+    return {"message": "ReconOps Backend", "docs": "/docs", "health": "/health"}
+
 
 @app.get("/health")
 async def health():
